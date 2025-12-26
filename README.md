@@ -98,11 +98,14 @@ When you first run LUGACH in interactive mode, you will see a menu like this:
 ```
 
 Select **Setup** to add your authentication details for Canvas, Top Hat, and
-Lighthouse. These credentials are stored securely and are required for the other
-features to function.
+Lighthouse. These credentials are required for the other features to
+function and are stored securely using the system keyring.
+
+> Note that WSL lacks a built-in keyring, so credentials are instead stored in
+> a dotfile in the user's home directory. This is inherently insecure, so
+> proceed with caution.
 
 ## Contributing
 
 Contributions are welcome! If you have suggestions or bug reports, feel free to
-open an issue or submit a pull request. Sorry for my undocumented and all around
-shabby code 😭
+open an issue or submit a pull request.

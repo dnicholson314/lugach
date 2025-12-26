@@ -61,7 +61,7 @@ def _fernet() -> Fernet:
     return Fernet(_get_or_create_encryption_key())
 
 
-def _encrypt_value(value: str) -> str:
+def _encrypt_token(value: str) -> str:
     token = _fernet().encrypt(value.encode("utf-8")).decode("utf-8")
     return token
 
@@ -74,7 +74,7 @@ def _decrypt_token(token: str) -> str:
 def update_env_file(**kwargs: str) -> None:
     ENV_PATH.touch()
     for key, value in kwargs.items():
-        token = _encrypt_value(value)
+        token = _encrypt_token(value)
         dv.set_key(dotenv_path=ENV_PATH, key_to_set=key, value_to_set=token)
 
 
