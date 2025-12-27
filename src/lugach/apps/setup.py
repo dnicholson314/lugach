@@ -2,7 +2,6 @@ from canvasapi.exceptions import InvalidAccessToken
 import lugach.core.cvutils as cvu
 from lugach.core.secrets import update_env_file
 import lugach.core.thutils as thu
-import lugach.core.lhutils as lhu
 
 WELCOME_MESSAGE = """\
     Welcome to LUGACH! This application will walk you through the steps
@@ -23,11 +22,6 @@ TOP_HAT_MESSAGE = """\
     you like to do this now (y/n)? \
 """
 
-LIGHTHOUSE_MESSAGE = """\
-    Almost done! The last thing we'll do is update your Liberty
-    credentials for Lighthouse. Would you like to do this now (y/n)? \
-"""
-
 SETUP_COMPLETE = """\
     You're all done with setup!
 
@@ -40,8 +34,8 @@ def set_up_canvas_api_key():
         try:
             cvu.create_canvas_object()
             break
-        except (NameError, InvalidAccessToken) as e:
-            print(e)
+        except (NameError, InvalidAccessToken):
+            print("The provided credentials were incorrect.")
             api_url = input("Enter the Canvas API url: ")
             api_key = input("Enter the Canvas API key: ")
             update_env_file(CANVAS_API_URL=api_url, CANVAS_API_KEY=api_key)
@@ -75,13 +69,6 @@ def main():
 
     if th_setup == "y":
         set_up_th_auth_key()
-
-    print()
-    lh_setup = input(LIGHTHOUSE_MESSAGE)
-    print()
-
-    if lh_setup == "y":
-        lhu.prompt_user_for_liberty_credentials()
 
     print()
     input(SETUP_COMPLETE)
