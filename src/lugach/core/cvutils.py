@@ -67,7 +67,7 @@ def create_canvas_object() -> Canvas:
 
     try:
         canvas = Canvas(API_URL, API_KEY)
-        canvas.get_courses()[0]
+        canvas.get_courses()
     except InvalidAccessToken as e:
         message = "You entered an invalid API key in the .env file."
         raise InvalidAccessToken(message) from e
