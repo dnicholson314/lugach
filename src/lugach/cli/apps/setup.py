@@ -1,7 +1,14 @@
+from getpass import getpass
 from canvasapi.exceptions import InvalidAccessToken
+from playwright.sync_api import sync_playwright
 import lugach.core.cvutils as cvu
 from lugach.core.secrets import update_env_file
 import lugach.core.thutils as thu
+import lugach.core.flutils as flu
+
+import warnings
+
+warnings.filterwarnings("ignore")
 
 WELCOME_MESSAGE = """\
     Welcome to LUGACH! This application will walk you through the steps
@@ -16,10 +23,14 @@ CANVAS_MESSAGE = """\
     your Canvas API key. If not, we'll go ahead and do those things.\
 """
 
+LIBERTY_CREDENTIALS_MESSAGE = """\
+    Next, we'll check if you have inputted proper Liberty credentials,
+    which are required to set up Top Hat.\
+"""
+
 TOP_HAT_MESSAGE = """\
-    Next, we'll go ahead and set up your Top Hat credentials. This
-    will require obtaining your JWT refresh key from Top Hat. Would
-    you like to do this now (y/n)? \
+    Finally, we'll go ahead and check if your Top Hat credentials work,
+    and retrieve them if not.\
 """
 
 SETUP_COMPLETE = """\
@@ -29,27 +40,77 @@ SETUP_COMPLETE = """\
 """
 
 
-def set_up_canvas_api_key():
+def _update_canvas_credentials() -> None:
+    api_url = input("Enter the Canvas API url: ")
+    api_key = getpass("Enter the Canvas API key: ")
+    update_env_file(CANVAS_API_URL=api_url, CANVAS_API_KEY=api_key)
+
+
+def _set_up_canvas_api_key():
     while True:
         try:
             cvu.create_canvas_object()
-            break
+
+            should_update_canvas_credentials = input(
+                "    The provided Canvas credentials work! Would you like to update them (y/n)? "
+            )
+            if should_update_canvas_credentials == "y":
+                _update_canvas_credentials()
+
+            return
         except (NameError, InvalidAccessToken):
-            print("The provided credentials were incorrect.")
-            api_url = input("Enter the Canvas API url: ")
-            api_key = input("Enter the Canvas API key: ")
-            update_env_file(CANVAS_API_URL=api_url, CANVAS_API_KEY=api_key)
+            print("    The provided credentials were incorrect.")
+            _update_canvas_credentials()
 
 
-def set_up_th_auth_key():
+def _set_up_liberty_credentials():
+    while True:
+        try:
+            flu.get_liberty_credentials()
+            should_update_liberty_credentials = input(
+                "    The provided Liberty credentials work! Would you like to update them (y/n)? "
+            )
+            if should_update_liberty_credentials == "y":
+                flu.prompt_user_for_liberty_credentials()
+
+            return
+        except NameError:
+            print("    Failed to obtain Liberty credentials.")
+            flu.prompt_user_for_liberty_credentials()
+
+
+def _update_top_hat_credentials():
+    with sync_playwright() as playwright:
+        try:
+            th_auth_key = thu.refresh_th_auth_key(playwright)
+            update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
+            return
+        except PermissionError:
+            pass
+
+        print(
+            "    Could not access Top Hat automatically; loading Top Hat using Liberty credentials "
+            "\n    and trying again..."
+        )
+        flu.authenticate_for_th(playwright)
+        th_auth_key = thu.refresh_th_auth_key(playwright)
+        update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
+
+
+def _set_up_th_auth_key():
     while True:
         try:
             thu.get_auth_header_for_session()
+            print("    The provided Top Hat credentials work!")
             return
-        except (NameError, ConnectionRefusedError) as e:
-            print(e)
-            th_auth_key = input("Enter the auth key from Top Hat: ")
-            update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
+        except (NameError, ConnectionRefusedError):
+            should_update_top_hat_credentials = input(
+                "    The provided Top Hat credentials did not work. Would you like to try updating them automatically (y/n)? "
+            )
+            if should_update_top_hat_credentials != "y":
+                return
+
+            _update_top_hat_credentials()
 
 
 def main():
@@ -61,14 +122,19 @@ def main():
     print(CANVAS_MESSAGE)
     print()
 
-    set_up_canvas_api_key()
+    _set_up_canvas_api_key()
 
     print()
-    th_setup = input(TOP_HAT_MESSAGE)
+    print(LIBERTY_CREDENTIALS_MESSAGE)
     print()
 
-    if th_setup == "y":
-        set_up_th_auth_key()
+    _set_up_liberty_credentials()
+
+    print()
+    print(TOP_HAT_MESSAGE)
+    print()
+
+    _set_up_th_auth_key()
 
     print()
     input(SETUP_COMPLETE)

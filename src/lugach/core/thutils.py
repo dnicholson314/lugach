@@ -1,4 +1,8 @@
 from typing import Any, Optional
+from playwright.sync_api import Playwright
+from playwright.sync_api import TimeoutError
+
+from lugach.core.flutils import get_liberty_credentials, TH_AUTH_FILE
 
 import lugach.core.cvutils as cvu
 import requests
@@ -7,6 +11,8 @@ from datetime import datetime
 
 from lugach.core.secrets import get_secret
 
+import json
+
 type Course = dict[str, Any]
 type Student = dict[str, Any]
 type AuthHeader = dict[str, str]
@@ -14,6 +20,8 @@ type AttendanceItem = dict[str, Any]
 type AttendanceProportion = tuple[int, int]
 
 
+LIBERTY_USERNAME, LIBERTY_PASSWORD = get_liberty_credentials()
+AUTH_REQUEST_KEY_NAME = "th_jwt_refresh"
 AUTH_KEY_SECRET_NAME = "TH_AUTH_KEY"
 
 
@@ -26,6 +34,41 @@ class AttendanceOptions(Enum):
 def _get_th_auth_token_from_env_file() -> str:
     TH_AUTH_KEY = get_secret(AUTH_KEY_SECRET_NAME)
     return TH_AUTH_KEY
+
+
+def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> str:
+    th_auth_key: str | None = None
+    browser = playwright.chromium.launch()
+    storage_state = TH_AUTH_FILE
+    if not TH_AUTH_FILE.exists():
+        storage_state = None
+
+    context = browser.new_context(storage_state=storage_state)
+    page = context.new_page()
+
+    try:
+        with page.expect_request(
+            lambda request: "refresh_jwt" in request.url,
+            timeout=timeout_in_seconds * 1000,
+        ) as intercepted:
+            page.goto("https://app.tophat.com/e")
+            page.get_by_role("button", name="Main Menu").click()
+
+        request = intercepted.value
+        if not request.post_data:
+            raise TimeoutError("No post data")
+
+        th_auth_key = json.loads(request.post_data)[AUTH_REQUEST_KEY_NAME]
+    except TimeoutError:
+        pass
+    finally:
+        context.close()
+        browser.close()
+
+    if not th_auth_key:
+        raise PermissionError("Fatal: Could not retrieve Top Hat auth key.")
+
+    return th_auth_key
 
 
 def get_auth_header_for_session() -> AuthHeader:
