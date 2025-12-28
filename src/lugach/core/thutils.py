@@ -2,6 +2,7 @@ from typing import Any, Optional
 from playwright.sync_api import Playwright
 from playwright.sync_api import TimeoutError
 
+from lugach.core import secrets
 from lugach.core.flutils import get_liberty_credentials, TH_AUTH_FILE
 
 import lugach.core.cvutils as cvu
@@ -9,7 +10,7 @@ import requests
 from enum import Enum
 from datetime import datetime
 
-from lugach.core.secrets import get_secret
+from lugach.core.secrets import get_secret, load_encrypted_storage_state
 
 import json
 
@@ -23,6 +24,7 @@ type AttendanceProportion = tuple[int, int]
 LIBERTY_USERNAME, LIBERTY_PASSWORD = get_liberty_credentials()
 AUTH_REQUEST_KEY_NAME = "th_jwt_refresh"
 AUTH_KEY_SECRET_NAME = "TH_AUTH_KEY"
+STORAGE_STATE_SECRET_NAME = "th_storage"
 
 
 class AttendanceOptions(Enum):
@@ -36,12 +38,44 @@ def _get_th_auth_token_from_env_file() -> str:
     return TH_AUTH_KEY
 
 
+def get_th_storage_state(playwright: Playwright) -> None:
+    liberty_username, liberty_password = get_liberty_credentials()
+    browser = playwright.chromium.launch()
+    context = browser.new_context()
+    page = context.new_page()
+
+    page.goto("https://app.tophat.com/login")
+    page.get_by_role("combobox", name="Type to search for your school").click()
+    page.get_by_role("combobox", name="Type to search for your school").fill(
+        "Liberty University"
+    )
+    page.get_by_role("option", name="Liberty University", exact=True).click()
+    page.get_by_role("button", name="Log in with school account").click()
+    page.get_by_role("textbox", name="Enter your email, phone, or").click()
+    page.get_by_role("textbox", name="Enter your email, phone, or").fill(
+        liberty_username
+    )
+    page.get_by_role("button", name="Next").click()
+    page.get_by_role("textbox", name="Enter the password for").click()
+    page.get_by_role("textbox", name="Enter the password for").fill(liberty_password)
+    page.get_by_role("button", name="Sign in").click()
+
+    page.wait_for_url("**/e")
+
+    storage_state = context.storage_state(path=TH_AUTH_FILE)
+    secrets.save_encrypted_storage_state(STORAGE_STATE_SECRET_NAME, storage_state)
+
+    context.close()
+    browser.close()
+
+
 def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> str:
     th_auth_key: str | None = None
     browser = playwright.chromium.launch()
-    storage_state = TH_AUTH_FILE
-    if not TH_AUTH_FILE.exists():
-        storage_state = None
+    try:
+        storage_state = load_encrypted_storage_state(name=STORAGE_STATE_SECRET_NAME)
+    except FileNotFoundError:
+        raise PermissionError("Fatal: could not load authenticated storage state.")
 
     context = browser.new_context(storage_state=storage_state)
     page = context.new_page()
@@ -56,10 +90,10 @@ def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> str:
 
         request = intercepted.value
         if not request.post_data:
-            raise TimeoutError("No post data")
+            raise RuntimeError("No post data")
 
         th_auth_key = json.loads(request.post_data)[AUTH_REQUEST_KEY_NAME]
-    except TimeoutError:
+    except (TimeoutError, RuntimeError):
         pass
     finally:
         context.close()

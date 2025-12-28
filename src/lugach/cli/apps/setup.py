@@ -92,7 +92,7 @@ def _update_top_hat_credentials():
             "    Could not access Top Hat automatically; loading Top Hat using Liberty credentials "
             "\n    and trying again..."
         )
-        flu.authenticate_for_th(playwright)
+        thu.get_th_storage_state(playwright)
         th_auth_key = thu.refresh_th_auth_key(playwright)
         update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
 

@@ -11,15 +11,12 @@ Phase 2: Generalizing processes
   * Create analogue for Paginated List except to handle large lists of students
   * Use the process that `canvasapi` uses to create course/student objects
   * Handle error codes from server (what to do when we receive no data)
-* Lighthouse API
-  * Create student objects
-  * ✅ Handle error codes from server
 * Create unified student object that combines Canvas/TH/LH
 
 Phase 3: Implementing GUI
 -------------------------
 
-* Encrypting sensitive information
+* ~~Encrypting sensitive information~~
 * Config application
   * Credentials
     * Get user's Canvas API key
@@ -29,7 +26,7 @@ Phase 3: Implementing GUI
   * Classes
     * Unify Canvas/TH/LH student objects
     * Have user manually resolve discrepancies
-    * Use SQL database to store these
+    * Use SQL database to store mappings
   * Network (optional)
     * Number of API call attempts
     * Seconds to wait before retrying request
@@ -41,6 +38,5 @@ Phase 3: Implementing GUI
     * Every function that runs should print to console so that I can see the trace
 * Shell for application
   * Tkinter?
-  * Textual?
-  * ~~Git website?~~ **Off limits because of Canvas's TOS**
+  * Textual? **Probably this**
 * Write documentation

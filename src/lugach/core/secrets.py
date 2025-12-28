@@ -1,8 +1,12 @@
 import os
+import json
 import platform
+from typing import cast
 import dotenv as dv
 from cryptography.fernet import Fernet
 from pathlib import Path
+
+from playwright.sync_api import StorageState
 
 try:
     import keyring
@@ -124,3 +128,27 @@ def set_credentials(id: str, username: str, password: str) -> None:
             f"{id}_PASSWORD": password,
         }
     )
+
+
+def save_encrypted_storage_state(name: str, storage_state: StorageState) -> None:
+    """
+    Encrypts and stores a Playwright storage state under a given name.
+    """
+    state_json = json.dumps(storage_state)
+    encrypted_state = _encrypt_token(state_json)
+    storage_file = ROOT_DIR / f"{name}.state"
+    storage_file.write_text(encrypted_state, encoding="utf-8")
+
+
+def load_encrypted_storage_state(name: str) -> StorageState:
+    """
+    Loads and decrypts a Playwright storage state by name.
+    Returns the storage state as a dictionary.
+    """
+    storage_file = ROOT_DIR / f"{name}.state"
+    if not storage_file.exists():
+        raise FileNotFoundError(f"No storage state found for '{name}'")
+
+    encrypted_state = storage_file.read_text(encoding="utf-8")
+    state_json = _decrypt_token(encrypted_state)
+    return cast(StorageState, json.loads(state_json))
