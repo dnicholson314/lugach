@@ -1,10 +1,7 @@
 from getpass import getpass
 from lugach.core.secrets import get_credentials, set_credentials
 
-from lugach.core.secrets import ROOT_DIR
-
 LIBERTY_CREDENTIALS_ID = "LU_LIGHTHOUSE"
-TH_AUTH_FILE = ROOT_DIR / "state.json"
 
 
 def get_liberty_credentials() -> tuple[str, str]:
