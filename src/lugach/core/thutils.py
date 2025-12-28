@@ -3,7 +3,7 @@ from playwright.sync_api import Playwright
 from playwright.sync_api import TimeoutError
 
 from lugach.core import secrets
-from lugach.core.flutils import get_liberty_credentials, TH_AUTH_FILE
+from lugach.core.flutils import get_liberty_credentials
 
 import lugach.core.cvutils as cvu
 import requests
@@ -62,7 +62,7 @@ def get_th_storage_state(playwright: Playwright) -> None:
 
     page.wait_for_url("**/e")
 
-    storage_state = context.storage_state(path=TH_AUTH_FILE)
+    storage_state = context.storage_state()
     secrets.save_encrypted_storage_state(STORAGE_STATE_SECRET_NAME, storage_state)
 
     context.close()

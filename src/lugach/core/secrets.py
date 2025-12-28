@@ -5,6 +5,7 @@ from typing import cast
 import dotenv as dv
 from cryptography.fernet import Fernet
 from pathlib import Path
+from warnings import warn
 
 from playwright.sync_api import StorageState
 
@@ -47,6 +48,12 @@ def _get_or_create_encryption_key() -> bytes:
             return key
         except keyring.errors.KeyringError:
             pass  # Fall back if no backend is available
+
+    warn(
+        "Warning: falling back to file-based storage for authentication credentials. "
+        "This is inherently insecure, so proceed with caution.",
+        UserWarning,
+    )
 
     # Fallback: secure file
     if FALLBACK_KEY_FILE.exists():

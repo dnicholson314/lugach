@@ -105,7 +105,8 @@ def _set_up_th_auth_key():
             return
         except (NameError, ConnectionRefusedError):
             should_update_top_hat_credentials = input(
-                "    The provided Top Hat credentials did not work. Would you like to try updating them automatically (y/n)? "
+                "    The provided Top Hat credentials did not work. Would you like to try updating them"
+                "\nautomatically (y/n)? "
             )
             if should_update_top_hat_credentials != "y":
                 return
