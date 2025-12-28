@@ -56,7 +56,7 @@ def run_app_from_app_name(app_name: str):
     lint_app_name(app_name)
 
     try:
-        app = importlib.import_module(f"lugach.apps.{app_name}")
+        app = importlib.import_module(f"lugach.cli.apps.{app_name}")
         app.main()
     except (KeyboardInterrupt, EOFError):
         print()

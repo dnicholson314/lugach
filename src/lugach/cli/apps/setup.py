@@ -49,7 +49,7 @@ def set_up_th_auth_key():
         except (NameError, ConnectionRefusedError) as e:
             print(e)
             th_auth_key = input("Enter the auth key from Top Hat: ")
-            update_env_file(TH_AUTH_KEY=th_auth_key)
+            update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
 
 
 def main():

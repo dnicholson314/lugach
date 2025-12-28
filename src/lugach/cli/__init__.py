@@ -5,7 +5,11 @@ import lugach.core.thutils as thu
 import lugach.core.cvutils as cvu
 
 from lugach.cli import interactive, utils
-from lugach.apps import app_names_and_descriptions, lint_app_name, run_app_from_app_name
+from lugach.cli.apps import (
+    app_names_and_descriptions,
+    lint_app_name,
+    run_app_from_app_name,
+)
 
 
 @click.group()
