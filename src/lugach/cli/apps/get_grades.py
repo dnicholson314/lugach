@@ -17,7 +17,7 @@ def main():
     for assignment in assignments:
         submission = assignment.get_submission(student.id)
 
-        if submission and submission.workflow_state == "graded":
+        if submission and submission.score:
             print(
                 f"{assignment.name:30.30} | {submission.score:4.0f} / {assignment.points_possible:<4.0f}"
             )
