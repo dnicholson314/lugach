@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime as dt
 from datetime import timezone
 
@@ -161,8 +162,11 @@ class StudentDetails(Vertical):
             self.th_course = None
             return
 
-        self.th_course = thu.get_th_course_from_canvas_course(
-            self._auth_header, new_course, development=True
+        self.th_course = await asyncio.to_thread(
+            thu.get_th_course_from_canvas_course,
+            auth_header=self._auth_header,
+            cv_course=new_course,
+            development=True,
         )
 
     async def watch_student(self, new_student: User | None):
@@ -171,7 +175,9 @@ class StudentDetails(Vertical):
             return
 
         email = new_student.email
-        th_students = thu.get_th_students(self._auth_header, self.th_course)
+        th_students = await asyncio.to_thread(
+            thu.get_th_students, auth_header=self._auth_header, course=self.th_course
+        )
 
         matches = (student for student in th_students if student["email"] == email)
         self.th_student = next(matches, None)

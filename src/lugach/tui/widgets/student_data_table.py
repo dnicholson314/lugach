@@ -24,6 +24,8 @@ class StudentDataTable(DataTable):
         if not new_course:
             return
 
+        self.loading = True
+
         students = await asyncio.to_thread(
             new_course.get_users, enrollment_type="student"
         )
@@ -36,3 +38,5 @@ class StudentDataTable(DataTable):
                 getattr(student, "email", ""),
             ]
             self.add_row(*row, key=key)
+
+        self.loading = False
