@@ -3,7 +3,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header
 
 from lugach.core import cvutils as cvu
-from lugach.tui.pages.student_view import StudentView
+from lugach.tui.pages.students_view import StudentsView
 
 
 class LUGACHApp(App):
@@ -18,7 +18,7 @@ class LUGACHApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
-        yield StudentView(self._canvas)
+        yield StudentsView(self._canvas)
 
 
 def app() -> None:

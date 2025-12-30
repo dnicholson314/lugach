@@ -1,39 +1,17 @@
 from datetime import datetime as dt
 from datetime import timezone
-from typing import cast
 
-from canvasapi import Canvas
 from canvasapi.course import Course
 from canvasapi.user import User
 from dateutil.parser import parse
-import requests
 from rich.table import Table
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Vertical
+from textual.containers import Vertical
 from textual.reactive import reactive
-from textual.widgets import Collapsible, DataTable, Label, Select, Static
-from textual.widgets.select import NoSelection
+from textual.widgets import Collapsible, Label, Static
 
 from lugach.core import thutils as thu
-from lugach.tui.widgets import CourseSelect, StudentDataTable
-
-from textual import log
-
-LOCAL_TIMEZONE = dt.now().astimezone().tzinfo
-
-
-def _convert_iso_to_formatted_date(iso: str | dt, format="%b %d, %Y"):
-    """
-    Take an ISO string or datetime object and convert it to a formatted date
-    for display.
-    """
-    if isinstance(iso, str):
-        iso = parse(iso)
-
-    if iso.tzinfo is None:
-        iso = iso.replace(tzinfo=timezone.utc)
-
-    return iso.astimezone(LOCAL_TIMEZONE).strftime(format)
+from lugach.tui.utils import convert_iso_to_formatted_date
 
 
 def _get_info_table_for_student(student: User) -> Table:
@@ -49,7 +27,7 @@ def _get_info_table_for_student(student: User) -> Table:
     )
 
     formatted_last_login = (
-        _convert_iso_to_formatted_date(student.last_login)
+        convert_iso_to_formatted_date(student.last_login)
         if getattr(student, "last_login", None)
         else ""
     )
@@ -79,16 +57,16 @@ def _get_grades_table_for_student(student: User, course: Course) -> Table:
         if not submission:
             continue
 
-        log(submission.__repr__)
-
         # Datetime object in UTC
         raw_due_date = assignment.due_at and parse(assignment.due_at)
         # Formatted datetime object in local timezone
-        due_date = raw_due_date and _convert_iso_to_formatted_date(raw_due_date)
+        due_date = raw_due_date and convert_iso_to_formatted_date(raw_due_date)
         # We do the comparison in UTC for consistency
         style = (
             "red"
-            if not submission.submitted_at and raw_due_date < dt.now(timezone.utc)
+            if not submission.score
+            and not submission.submitted_at
+            and raw_due_date < dt.now(timezone.utc)
             else None
         )
 
@@ -145,9 +123,6 @@ class StudentDetails(Vertical):
     View details about a student's status in a course.
     """
 
-    # A flag which allows Top Hat testing in development environments.
-    _development = True
-
     _auth_header: thu.AuthHeader
     course: reactive[Course | None] = reactive(None)
     th_course: thu.Course | None
@@ -186,37 +161,9 @@ class StudentDetails(Vertical):
             self.th_course = None
             return
 
-        th_courses = thu.get_th_courses(self._auth_header)
-
-        if self._development:
-            matches = (
-                course
-                for course in th_courses
-                if course.get("course_name") == "Test Course 1"
-            )
-            self.th_course = next(matches, None)
-            return
-
-        for course in th_courses:
-            id = course.get("course_id")
-            if not id:
-                continue
-
-            lti_data: dict = {}
-            try:
-                lti_url = f"https://app.tophat.com/api/v3/sync/courses/{id}/config/"
-                lti_response = requests.get(lti_url, headers=self._auth_header)
-                lti_response.raise_for_status()
-                lti_data = lti_response.json()
-            except requests.HTTPError:
-                continue
-
-            cv_course_id = lti_data.get("lms_course_id")
-            if not cv_course_id or cv_course_id != new_course.id:
-                continue
-
-            self.th_course = course
-            return
+        self.th_course = thu.get_th_course_from_canvas_course(
+            self._auth_header, new_course, development=True
+        )
 
     async def watch_student(self, new_student: User | None):
         if not new_student or not self.th_course:
@@ -228,44 +175,3 @@ class StudentDetails(Vertical):
 
         matches = (student for student in th_students if student["email"] == email)
         self.th_student = next(matches, None)
-
-
-class StudentView(Horizontal):
-    """
-    Page for viewing student information across the user's
-    managed courses.
-    """
-
-    _canvas: Canvas
-
-    def __init__(self, canvas: Canvas):
-        super().__init__()
-        self._canvas = canvas
-
-    def compose(self) -> ComposeResult:
-        with Vertical():
-            yield CourseSelect(self._canvas)
-            yield StudentDataTable()
-        yield StudentDetails()
-
-    def on_select_changed(self, event: Select.Changed) -> None:
-        value = event.value
-        student_data_table = self.query_one(StudentDataTable)
-        student_details = self.query_one(StudentDetails)
-
-        if isinstance(value, NoSelection):
-            student_data_table.course = None
-            student_details.course = None
-            student_details.student = None
-            return
-
-        course = cast(Course, value)
-        student_data_table.course = course
-        student_details.course = course
-
-    def on_data_table_row_selected(self, event: DataTable.RowSelected):
-        student_id = event.row_key.value
-        student_details = self.query_one(StudentDetails)
-        student_details.student = self._canvas.get_user(
-            student_id, include=["last_login"]
-        )

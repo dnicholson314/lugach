@@ -473,3 +473,41 @@ def close_attendance(auth_header: AuthHeader, course_id: int, attendance_item_id
     close_attendance_response.raise_for_status()
 
     print(f"Attendance item {attendance_item_id} closed.")
+
+
+def get_th_course_from_canvas_course(
+    auth_header, cv_course: cvu.Course, development=False
+) -> Course | None:
+    th_courses = get_th_courses(auth_header)
+
+    if development:
+        matches = (
+            course
+            for course in th_courses
+            if course.get("course_name") == "Test Course 1"
+        )
+        return next(matches, None)
+
+    th_course = None
+    for course in th_courses:
+        id = course.get("course_id")
+        if not id:
+            continue
+
+        lti_data: dict = {}
+        try:
+            lti_url = f"https://app.tophat.com/api/v3/sync/courses/{id}/config/"
+            lti_response = requests.get(lti_url, headers=auth_header)
+            lti_response.raise_for_status()
+            lti_data = lti_response.json()
+        except requests.HTTPError:
+            continue
+
+        cv_course_id = lti_data.get("lms_course_id")
+        if not cv_course_id or cv_course_id != cv_course.id:
+            continue
+
+        th_course = course
+        break
+
+    return th_course
