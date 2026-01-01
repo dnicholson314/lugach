@@ -10,9 +10,11 @@ class LUGACHApp(App):
     """A TUI for LUGACH."""
 
     _canvas: Canvas
+    CSS_PATH = "app.tcss"
 
     def __init__(self):
         super().__init__()
+        self.title = "LUGACH"
         self._canvas = cvu.create_canvas_object()
 
     def compose(self) -> ComposeResult:

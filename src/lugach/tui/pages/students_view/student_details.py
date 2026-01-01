@@ -63,20 +63,19 @@ def _get_grades_table_for_student(student: User, course: Course) -> Table:
         # Formatted datetime object in local timezone
         due_date = raw_due_date and convert_iso_to_formatted_date(raw_due_date)
         # We do the comparison in UTC for consistency
-        style = (
-            "red"
+        styled_due_date = (
+            f"[red]{due_date}[/red]"
             if not submission.score
             and not submission.submitted_at
             and raw_due_date < dt.now(timezone.utc)
-            else None
+            else due_date
         )
 
         table.add_row(
-            assignment.name,
-            due_date,
+            f"[link={assignment.html_url}]{assignment.name}[/link]",
+            styled_due_date,
             submission.score and f"{submission.score:.0f}",
             f"{assignment.points_possible:.0f}",
-            style=style,
         )
         total_score += round(submission.score) if submission.score else 0
         total_points += round(assignment.points_possible)
@@ -130,8 +129,8 @@ class StudentDetails(Vertical):
     student: reactive[User | None] = reactive(None, recompose=True)
     th_student: thu.Student | None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._auth_header = thu.get_auth_header_for_session()
 
     def compose(self) -> ComposeResult:

@@ -5,7 +5,7 @@ from textual.reactive import reactive
 from textual.widgets import DataTable
 
 
-class StudentDataTable(DataTable):
+class StudentsDataTable(DataTable):
     """View information about students in a course."""
 
     course: reactive[Course | None] = reactive(None)

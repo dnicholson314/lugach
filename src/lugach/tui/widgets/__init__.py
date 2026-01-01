@@ -1,4 +1,4 @@
 from .course_select import CourseSelect
-from .student_data_table import StudentDataTable
+from .students_data_table import StudentsDataTable
 
-__all__ = ["CourseSelect", "StudentDataTable"]
+__all__ = ["CourseSelect", "StudentsDataTable"]

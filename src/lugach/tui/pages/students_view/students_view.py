@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import DataTable, Tree
 
 from lugach.tui.pages.students_view.student_details import StudentDetails
-from lugach.tui.widgets import CourseSelect, StudentDataTable
+from lugach.tui.widgets import CourseSelect, StudentsDataTable
 
 
 class StudentsView(Horizontal):
@@ -24,21 +24,21 @@ class StudentsView(Horizontal):
 
     def compose(self) -> ComposeResult:
         yield CourseSelect(self._canvas)
-        yield StudentDataTable()
+        yield StudentsDataTable()
         yield StudentDetails()
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         value = event.node.data
-        student_data_table = self.query_one(StudentDataTable)
+        students_data_table = self.query_one(StudentsDataTable)
         student_details = self.query_one(StudentDetails)
         if not value:
-            student_data_table.course = None
+            students_data_table.course = None
             student_details.course = None
             student_details.student = None
             return
 
         course = cast(Course, value)
-        student_data_table.course = course
+        students_data_table.course = course
         student_details.course = course
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected):

@@ -4,19 +4,17 @@ import platform
 from typing import cast
 import dotenv as dv
 from cryptography.fernet import Fernet
-from pathlib import Path
 from warnings import warn
 
 from playwright.sync_api import StorageState
+
+from lugach.config import ROOT_DIR
 
 try:
     import keyring
     import keyring.errors
 except ImportError:
     keyring = None
-
-ROOT_DIR = Path.home() / ".lugach"
-ROOT_DIR.mkdir(parents=True, exist_ok=True)
 
 ENV_PATH = ROOT_DIR / ".env"
 

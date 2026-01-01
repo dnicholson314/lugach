@@ -1,0 +1,11 @@
+StudentsView > CourseSelect {
+    width: 1fr;
+}
+
+StudentsView > StudentDataTable {
+    width: 2fr;
+}
+
+StudentsView > StudentDetails {
+    width: 4fr;
+}
