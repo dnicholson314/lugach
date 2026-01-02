@@ -56,7 +56,11 @@ class StudentsDataTable(DataTable):
         self.load_students(new_course)
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
-        if not event.worker.name == "load_students" or not event.worker.is_finished:
+        if (
+            not event.worker.name == "load_students"
+            or event.worker.is_cancelled
+            or not event.worker.is_finished
+        ):
             return
 
         if not event.worker.result:

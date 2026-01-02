@@ -1,14 +1,6 @@
 import importlib
 import traceback as tb
 
-"""
-Edit this variable to enable/disable applications in LUGACH.
-Two applications are commented out by default; these make
-use of Lighthouse, which is a proprietary application that
-affects sensitive student information. As such, they are
-deprecated applications. Use them at your own risk, and with
-awareness that they may not be working.
-"""
 app_names_and_descriptions = {
     "setup": "Setup secret variables necessary for the other applications.",
     "identify_absent_students": "Identify students who have missed an excessive number of classes.",
@@ -20,6 +12,9 @@ app_names_and_descriptions = {
     "take_attendance": "Take and monitor attendance in Top Hat.",
     "get_grades": "View a student's grades in Canvas.",
 }
+"""
+Edit this variable to enable/disable applications in LUGACH.
+"""
 
 
 __all__ = [*app_names_and_descriptions]
