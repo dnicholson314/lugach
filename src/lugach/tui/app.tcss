@@ -1,11 +1,11 @@
 StudentsView > CourseSelect {
-    width: 1fr;
+    width: 20%;
 }
 
 StudentsView > StudentDataTable {
-    width: 2fr;
+    width: 40%;
 }
 
 StudentsView > StudentDetails {
-    width: 4fr;
+    width: 40%;
 }

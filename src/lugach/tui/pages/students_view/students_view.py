@@ -1,7 +1,10 @@
-from typing import cast
+import asyncio
+from typing import Optional
 
 from canvasapi import Canvas
 from canvasapi.course import Course
+from canvasapi.user import User
+from textual.reactive import reactive
 from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import DataTable, Tree
@@ -17,6 +20,8 @@ class StudentsView(Horizontal):
     """
 
     _canvas: Canvas
+    course: reactive[Optional[Course]] = reactive(None)
+    student: reactive[Optional[User]] = reactive(None)
 
     def __init__(self, canvas: Canvas):
         super().__init__()
@@ -24,26 +29,19 @@ class StudentsView(Horizontal):
 
     def compose(self) -> ComposeResult:
         yield CourseSelect(self._canvas)
-        yield StudentsDataTable()
-        yield StudentDetails()
+        yield StudentsDataTable().data_bind(StudentsView.course)
+        yield StudentDetails().data_bind(StudentsView.course, StudentsView.student)
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         value = event.node.data
-        students_data_table = self.query_one(StudentsDataTable)
-        student_details = self.query_one(StudentDetails)
-        if not value:
-            students_data_table.course = None
-            student_details.course = None
-            student_details.student = None
+        if self.course == value:
             return
 
-        course = cast(Course, value)
-        students_data_table.course = course
-        student_details.course = course
+        self.course = value if value else None
+        self.student = None
 
-    def on_data_table_row_selected(self, event: DataTable.RowSelected):
+    async def on_data_table_row_selected(self, event: DataTable.RowSelected):
         student_id = event.row_key.value
-        student_details = self.query_one(StudentDetails)
-        student_details.student = self._canvas.get_user(
-            student_id, include=["last_login"]
+        self.student = await asyncio.to_thread(
+            self._canvas.get_user, student_id, include=["last_login"]
         )
