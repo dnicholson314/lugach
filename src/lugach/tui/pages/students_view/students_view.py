@@ -4,13 +4,14 @@ from typing import Optional
 from canvasapi import Canvas
 from canvasapi.course import Course
 from canvasapi.user import User
-from textual.reactive import reactive
+from textual import on
 from textual.app import ComposeResult
 from textual.containers import Horizontal
+from textual.reactive import reactive
 from textual.widgets import DataTable, Tree
 
 from lugach.tui.pages.students_view.student_details import StudentDetails
-from lugach.tui.widgets import CourseSelect, StudentsDataTable
+from lugach.tui.widgets import CourseSelect, SearchableStudentsDataTable
 
 
 class StudentsView(Horizontal):
@@ -29,7 +30,7 @@ class StudentsView(Horizontal):
 
     def compose(self) -> ComposeResult:
         yield CourseSelect(self._canvas)
-        yield StudentsDataTable().data_bind(StudentsView.course)
+        yield SearchableStudentsDataTable().data_bind(StudentsView.course)
         yield StudentDetails().data_bind(StudentsView.course, StudentsView.student)
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
@@ -45,3 +46,7 @@ class StudentsView(Horizontal):
         self.student = await asyncio.to_thread(
             self._canvas.get_user, student_id, include=["last_login"]
         )
+
+    @on(SearchableStudentsDataTable.SelectionLost)
+    async def on_selection_lost(self):
+        self.student = None

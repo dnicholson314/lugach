@@ -10,6 +10,7 @@ dependencies = [
   "cryptography>=45.0.6",
   "keyring>=25.6.0",
   "playwright>=1.57.0",
+  "pyperclip>=1.11.0",
   "python-dotenv>=1.1.1",
   "textual>=6.11.0",
 ]
