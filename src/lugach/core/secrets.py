@@ -100,6 +100,18 @@ def get_secret(key: str) -> str:
     return value
 
 
+def remove_secret(key: str) -> None:
+    """
+    Remove an encrypted secret from the .env file.
+    """
+    if not ENV_PATH.exists():
+        return
+
+    dv.load_dotenv(dotenv_path=ENV_PATH, override=True)
+    dv.unset_key(dotenv_path=ENV_PATH, key_to_unset=key)
+    os.environ.pop(key, None)
+
+
 def get_credentials(id: str) -> tuple[str, str]:
     """
     Retrieve stored credentials (username/password) for a given id
@@ -133,6 +145,17 @@ def set_credentials(id: str, username: str, password: str) -> None:
             f"{id}_PASSWORD": password,
         }
     )
+
+
+def remove_credentials(id: str) -> None:
+    """
+    Remove encrypted credentials from the .env file.
+    """
+    if not ENV_PATH.exists():
+        return
+
+    remove_secret(f"{id}_USERNAME")
+    remove_secret(f"{id}_PASSWORD")
 
 
 def save_encrypted_storage_state(name: str, storage_state: StorageState) -> None:

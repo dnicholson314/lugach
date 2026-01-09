@@ -1,4 +1,10 @@
 from .course_select import CourseSelect
-from .students_data_table import StudentsDataTable, SearchableStudentsDataTable
+from .status_label import StatusLabel
+from .students_data_table import SearchableStudentsDataTable, StudentsDataTable
 
-__all__ = ["CourseSelect", "StudentsDataTable", "SearchableStudentsDataTable"]
+__all__ = [
+    "CourseSelect",
+    "StatusLabel",
+    "SearchableStudentsDataTable",
+    "StudentsDataTable",
+]

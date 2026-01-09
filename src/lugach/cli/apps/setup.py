@@ -82,8 +82,7 @@ def _set_up_liberty_credentials():
 def _update_top_hat_credentials():
     with sync_playwright() as playwright:
         try:
-            th_auth_key = thu.refresh_th_auth_key(playwright)
-            update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
+            thu.refresh_th_auth_key(playwright)
             return
         except PermissionError:
             pass
@@ -93,8 +92,7 @@ def _update_top_hat_credentials():
             "\n    and trying again..."
         )
         thu.get_th_storage_state(playwright)
-        th_auth_key = thu.refresh_th_auth_key(playwright)
-        update_env_file(**{thu.AUTH_KEY_SECRET_NAME: th_auth_key})
+        thu.refresh_th_auth_key(playwright)
 
 
 def _set_up_th_auth_key():

@@ -9,3 +9,27 @@ StudentsView > StudentDataTable {
 StudentsView > StudentDetails {
     width: 40%;
 }
+
+StatusLabel {
+    padding: 0 1;
+    border: round white;
+    min-width: 28;
+}
+
+.cv_creds_buttons {
+    margin-bottom: 1;
+}
+
+.cv_creds_buttons > * {
+    margin-right: 3;
+}
+
+.cv_creds_field {
+    margin-right: 3;
+    width: 67;
+}
+
+.cv_selection_list_wrapper {
+    margin-top: 1;
+    width: 67;
+}

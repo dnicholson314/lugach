@@ -21,7 +21,6 @@ type AttendanceItem = dict[str, Any]
 type AttendanceProportion = tuple[int, int]
 
 
-LIBERTY_USERNAME, LIBERTY_PASSWORD = get_liberty_credentials()
 AUTH_REQUEST_KEY_NAME = "th_jwt_refresh"
 AUTH_KEY_SECRET_NAME = "TH_AUTH_KEY"
 STORAGE_STATE_SECRET_NAME = "th_storage"
@@ -69,7 +68,7 @@ def get_th_storage_state(playwright: Playwright) -> None:
     browser.close()
 
 
-def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> str:
+def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> None:
     th_auth_key: str | None = None
     browser = playwright.chromium.launch()
     try:
@@ -102,7 +101,7 @@ def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> str:
     if not th_auth_key:
         raise PermissionError("Fatal: Could not retrieve Top Hat auth key.")
 
-    return th_auth_key
+    secrets.update_env_file(**{AUTH_KEY_SECRET_NAME: th_auth_key})
 
 
 def get_auth_header_for_session() -> AuthHeader:

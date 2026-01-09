@@ -3,6 +3,7 @@ from typing import Dict, Optional
 from lugach.config import ROOT_DIR
 
 MAPPING_FILE = ROOT_DIR / ".course_id_mappings.json"
+COURSE_FILE = ROOT_DIR / ".course_ids.json"
 
 
 def _load_mappings() -> Dict[str, str]:
@@ -21,8 +22,8 @@ def _save_mappings(mappings: Dict[str, str]) -> None:
     Persist all Canvas -> Top Hat course ID mappings to disk.
     """
     MAPPING_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with MAPPING_FILE.open("w", encoding="utf-8") as f:
-        json.dump(mappings, f, indent=2, sort_keys=True)
+    with MAPPING_FILE.open("w", encoding="utf-8") as file:
+        json.dump(mappings, file, indent=2, sort_keys=True)
 
 
 def save_course_mapping(
@@ -71,3 +72,48 @@ def get_all_mappings() -> Dict[int, int]:
         int(cv_course_id): int(th_course_id)
         for cv_course_id, th_course_id in mappings.items()
     }
+
+
+def _save_canvas_course_ids(course_ids: list[int]) -> None:
+    """
+    Save a list of Canvas course IDs to disk.
+    """
+    COURSE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with COURSE_FILE.open("w", encoding="utf-8") as file:
+        json.dump(course_ids, file, indent=2)
+
+
+def load_canvas_course_ids() -> list[int]:
+    """
+    Load the list of stored Canvas course IDs.
+
+    Returns an empty list if none are stored.
+    """
+    if not COURSE_FILE.exists():
+        return []
+
+    with COURSE_FILE.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return [int(course_id) for course_id in data]
+
+
+def save_canvas_course_id(
+    canvas_course_id: int,
+) -> None:
+    """
+    Save a Canvas course ID. If a duplicate exists, only one instance of the ID
+    is saved.
+    """
+    course_ids = set(load_canvas_course_ids())
+    course_ids.add(canvas_course_id)
+    _save_canvas_course_ids(list(course_ids))
+
+
+def delete_canvas_course_id(canvas_course_id: int) -> None:
+    """
+    Delete a Canvas course ID. If the ID does not exist, fail silently.
+    """
+    course_ids = set(load_canvas_course_ids())
+    course_ids.discard(canvas_course_id)
+    _save_canvas_course_ids(list(course_ids))

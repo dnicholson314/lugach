@@ -59,6 +59,24 @@ def match_course(query: str, course: Course) -> bool:
     return sanitized_query in sanitized_course_name_with_date
 
 
+def revoke_canvas_credentials() -> None:
+    secrets.remove_secret(API_URL_SECRET_NAME)
+    secrets.remove_secret(API_KEY_SECRET_NAME)
+
+
+def update_canvas_credentials(api_url: str, api_key: str) -> None:
+    secrets.update_env_file(
+        **{API_URL_SECRET_NAME: api_url, API_KEY_SECRET_NAME: api_key}
+    )
+
+
+def get_canvas_url() -> str | None:
+    try:
+        return secrets.get_secret(API_URL_SECRET_NAME)
+    except NameError:
+        return None
+
+
 def create_canvas_object() -> Canvas:
     API_URL = secrets.get_secret(API_URL_SECRET_NAME)
     API_KEY = secrets.get_secret(API_KEY_SECRET_NAME)
@@ -67,7 +85,7 @@ def create_canvas_object() -> Canvas:
 
     try:
         canvas = Canvas(API_URL, API_KEY)
-        canvas.get_courses()
+        list(canvas.get_courses())
     except InvalidAccessToken as e:
         message = "You entered an invalid API key in the .env file."
         raise InvalidAccessToken(message) from e
