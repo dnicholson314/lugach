@@ -1,6 +1,6 @@
 [project]
 name = "lugach"
-version = "0.2.0"
+version = "0.2.1"
 description = "An application that makes Liberty University GAs' lives easier."
 readme = "README.md"
 requires-python = ">=3.12"
