@@ -185,3 +185,7 @@ def students(course_id):
     parsed_students = utils.parse_top_hat_students_for_cli(students)
 
     click.echo(json.dumps(parsed_students, indent=4))
+
+
+if __name__ == "__main__":
+    cli()

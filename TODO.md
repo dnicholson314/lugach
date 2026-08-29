@@ -5,7 +5,7 @@ Phase 2: Implementing GUI
 -------------------------
 
 * ~~Encrypting sensitive information~~
-* TUI Config application
+* Config application
   * Credentials
     * Get user's Canvas API key
     * Get user's TH jwt refresh token
@@ -24,9 +24,6 @@ Phase 2: Implementing GUI
   * Implement a routine update process (either on app open or every few hours)
 * Implement Feedback API (upload console log)
   * Every function that runs should print to console so that I can see the trace
-* Shell for application
-  * Tkinter?
-  * ✅ Textual
 * Write documentation
 
 Phase 3: Generalizing processes
