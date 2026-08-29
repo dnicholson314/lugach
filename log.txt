@@ -1,0 +1,296 @@
+2026-08-29T04:04:31.7580726Z Current runner version: '2.336.0'
+2026-08-29T04:04:31.7601956Z ##[group]Runner Image Provisioner
+2026-08-29T04:04:31.7602636Z Hosted Compute Agent
+2026-08-29T04:04:31.7603429Z Version: 20260819.586
+2026-08-29T04:04:31.7603987Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-08-29T04:04:31.7604613Z Build Date: 2026-08-18T23:20:18Z
+2026-08-29T04:04:31.7605186Z Worker ID: {749c8707-da3c-449a-9836-2785c4c70626}
+2026-08-29T04:04:31.7605780Z Azure Region: westus3
+2026-08-29T04:04:31.7606307Z ##[endgroup]
+2026-08-29T04:04:31.7607749Z ##[group]Operating System
+2026-08-29T04:04:31.7608325Z Ubuntu
+2026-08-29T04:04:31.7608808Z 24.04.4
+2026-08-29T04:04:31.7609237Z LTS
+2026-08-29T04:04:31.7609741Z ##[endgroup]
+2026-08-29T04:04:31.7610227Z ##[group]Runner Image
+2026-08-29T04:04:31.7610742Z Image: ubuntu-24.04
+2026-08-29T04:04:31.7611221Z Version: 20260823.283.1
+2026-08-29T04:04:31.7612279Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-08-29T04:04:31.7613558Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-08-29T04:04:31.7614704Z ##[endgroup]
+2026-08-29T04:04:31.7615651Z ##[group]GITHUB_TOKEN Permissions
+2026-08-29T04:04:31.7617640Z Contents: write
+2026-08-29T04:04:31.7618171Z Metadata: read
+2026-08-29T04:04:31.7618621Z ##[endgroup]
+2026-08-29T04:04:31.7620392Z Secret source: Actions
+2026-08-29T04:04:31.7621235Z Prepare workflow directory
+2026-08-29T04:04:31.7900091Z Prepare all required actions
+2026-08-29T04:04:31.7955122Z Getting action download info
+2026-08-29T04:04:32.0763322Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-08-29T04:04:32.2563350Z Download action repository 'astral-sh/setup-uv@v6' (SHA:d0cc045d04ccac9d8b7881df0226f9e82c39688e)
+2026-08-29T04:04:33.1529073Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-08-29T04:04:33.3902113Z Complete job name: Build PyPI Package
+2026-08-29T04:04:33.4533628Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T04:04:33.4541284Z ##[group]Run actions/checkout@v4
+2026-08-29T04:04:33.4541872Z with:
+2026-08-29T04:04:33.4542219Z   fetch-depth: 0
+2026-08-29T04:04:33.4542608Z   repository: dnicholson314/lugach
+2026-08-29T04:04:33.4546199Z   token: ***
+2026-08-29T04:04:33.4546551Z   ssh-strict: true
+2026-08-29T04:04:33.4546913Z   ssh-user: git
+2026-08-29T04:04:33.4547434Z   persist-credentials: true
+2026-08-29T04:04:33.4547870Z   clean: true
+2026-08-29T04:04:33.4548243Z   sparse-checkout-cone-mode: true
+2026-08-29T04:04:33.4548696Z   fetch-tags: false
+2026-08-29T04:04:33.4549073Z   show-progress: true
+2026-08-29T04:04:33.4549451Z   lfs: false
+2026-08-29T04:04:33.4549855Z   submodules: false
+2026-08-29T04:04:33.4550241Z   set-safe-directory: true
+2026-08-29T04:04:33.4550669Z   allow-unsafe-pr-checkout: false
+2026-08-29T04:04:33.4551292Z ##[endgroup]
+2026-08-29T04:04:33.5336270Z Syncing repository: dnicholson314/lugach
+2026-08-29T04:04:33.5338065Z ##[group]Getting Git version info
+2026-08-29T04:04:33.5338709Z Working directory is '/home/runner/work/lugach/lugach'
+2026-08-29T04:04:33.5339604Z [command]/usr/bin/git version
+2026-08-29T04:04:33.5419246Z git version 2.55.0
+2026-08-29T04:04:33.5439809Z ##[endgroup]
+2026-08-29T04:04:33.5453352Z Temporarily overriding HOME='/home/runner/work/_temp/c1f8d605-e48d-473d-93bd-d7df663a3286' before making global git config changes
+2026-08-29T04:04:33.5454936Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T04:04:33.5457977Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lugach/lugach
+2026-08-29T04:04:33.5502392Z Deleting the contents of '/home/runner/work/lugach/lugach'
+2026-08-29T04:04:33.5505295Z ##[group]Initializing the repository
+2026-08-29T04:04:33.5510496Z [command]/usr/bin/git init /home/runner/work/lugach/lugach
+2026-08-29T04:04:33.5578409Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-08-29T04:04:33.5579907Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-08-29T04:04:33.5581225Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-08-29T04:04:33.5581930Z hint: call:
+2026-08-29T04:04:33.5582267Z hint:
+2026-08-29T04:04:33.5582729Z hint: 	git config --global init.defaultBranch <name>
+2026-08-29T04:04:33.5583288Z hint:
+2026-08-29T04:04:33.5583794Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-08-29T04:04:33.5584807Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-08-29T04:04:33.5585805Z hint:
+2026-08-29T04:04:33.5586330Z hint: 	git branch -m <name>
+2026-08-29T04:04:33.5586920Z hint:
+2026-08-29T04:04:33.5587718Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-08-29T04:04:33.5588626Z Initialized empty Git repository in /home/runner/work/lugach/lugach/.git/
+2026-08-29T04:04:33.5590466Z [command]/usr/bin/git remote add origin https://github.com/dnicholson314/lugach
+2026-08-29T04:04:33.5622895Z ##[endgroup]
+2026-08-29T04:04:33.5623692Z ##[group]Disabling automatic garbage collection
+2026-08-29T04:04:33.5626336Z [command]/usr/bin/git config --local gc.auto 0
+2026-08-29T04:04:33.5652349Z ##[endgroup]
+2026-08-29T04:04:33.5653098Z ##[group]Setting up auth
+2026-08-29T04:04:33.5658435Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T04:04:33.5691324Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T04:04:33.6059913Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T04:04:33.6091248Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T04:04:33.6314996Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T04:04:33.6346302Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T04:04:33.6534267Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-29T04:04:33.6566663Z ##[endgroup]
+2026-08-29T04:04:33.6567643Z ##[group]Fetching the repository
+2026-08-29T04:04:33.6574460Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-08-29T04:04:34.6755986Z From https://github.com/dnicholson314/lugach
+2026-08-29T04:04:34.6764846Z  * [new branch]      main       -> origin/main
+2026-08-29T04:04:34.6765949Z  * [new tag]         v0.1.2     -> v0.1.2
+2026-08-29T04:04:34.6766881Z  * [new tag]         v0.2.0     -> v0.2.0
+2026-08-29T04:04:34.6768028Z  * [new tag]         v0.2.1     -> v0.2.1
+2026-08-29T04:04:34.6768942Z  * [new tag]         v1.0.0     -> v1.0.0
+2026-08-29T04:04:34.6771308Z [command]/usr/bin/git tag --list v1.0.0
+2026-08-29T04:04:34.6785584Z v1.0.0
+2026-08-29T04:04:34.6794525Z [command]/usr/bin/git rev-parse refs/tags/v1.0.0
+2026-08-29T04:04:34.6818639Z 1108b71f6f5f9a971cffe9d31cfb76ae2b22fcce
+2026-08-29T04:04:34.6826921Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +e819c70e0ee44880b5c4fad6024ad62524c0a615:refs/tags/v1.0.0
+2026-08-29T04:04:34.6874181Z From https://github.com/dnicholson314/lugach
+2026-08-29T04:04:34.6876278Z  t [tag update]      e819c70e0ee44880b5c4fad6024ad62524c0a615 -> v1.0.0
+2026-08-29T04:04:34.6881715Z ##[endgroup]
+2026-08-29T04:04:34.6884527Z ##[group]Determining the checkout info
+2026-08-29T04:04:34.6886883Z ##[endgroup]
+2026-08-29T04:04:34.6894690Z [command]/usr/bin/git sparse-checkout disable
+2026-08-29T04:04:34.6938241Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-08-29T04:04:34.6966208Z ##[group]Checking out the ref
+2026-08-29T04:04:34.6968375Z [command]/usr/bin/git checkout --progress --force refs/tags/v1.0.0
+2026-08-29T04:04:34.7025833Z Note: switching to 'refs/tags/v1.0.0'.
+2026-08-29T04:04:34.7026635Z 
+2026-08-29T04:04:34.7027535Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-08-29T04:04:34.7029442Z changes and commit them, and you can discard any commits you make in this
+2026-08-29T04:04:34.7031558Z state without impacting any branches by switching back to a branch.
+2026-08-29T04:04:34.7033046Z 
+2026-08-29T04:04:34.7034113Z If you want to create a new branch to retain commits you create, you may
+2026-08-29T04:04:34.7036545Z do so (now or later) by using -c with the switch command. Example:
+2026-08-29T04:04:34.7038113Z 
+2026-08-29T04:04:34.7038703Z   git switch -c <new-branch-name>
+2026-08-29T04:04:34.7039732Z 
+2026-08-29T04:04:34.7040288Z Or undo this operation with:
+2026-08-29T04:04:34.7041160Z 
+2026-08-29T04:04:34.7041790Z   git switch -
+2026-08-29T04:04:34.7042388Z 
+2026-08-29T04:04:34.7043479Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-08-29T04:04:34.7045253Z 
+2026-08-29T04:04:34.7046239Z HEAD is now at e819c70 feat: add windows and mac build artifacts on tagged releases (#3)
+2026-08-29T04:04:34.7049747Z ##[endgroup]
+2026-08-29T04:04:34.7072145Z [command]/usr/bin/git log -1 --format=%H
+2026-08-29T04:04:34.7094613Z e819c70e0ee44880b5c4fad6024ad62524c0a615
+2026-08-29T04:04:34.7475113Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T04:04:34.7479382Z ##[group]Run astral-sh/setup-uv@v6
+2026-08-29T04:04:34.7480164Z with:
+2026-08-29T04:04:34.7480758Z   enable-cache: true
+2026-08-29T04:04:34.7481486Z   activate-environment: false
+2026-08-29T04:04:34.7482366Z   working-directory: /home/runner/work/lugach/lugach
+2026-08-29T04:04:34.7483351Z   server-url: https://github.com
+2026-08-29T04:04:34.7490606Z   github-token: ***
+2026-08-29T04:04:34.7492261Z   cache-dependency-glob: **/*requirements*.txt
+**/*requirements*.in
+**/*constraints*.txt
+**/*constraints*.in
+**/pyproject.toml
+**/uv.lock
+**/*.py.lock
+
+2026-08-29T04:04:34.7494064Z   restore-cache: true
+2026-08-29T04:04:34.7494767Z   save-cache: true
+2026-08-29T04:04:34.7495422Z   prune-cache: true
+2026-08-29T04:04:34.7496106Z   ignore-nothing-to-cache: false
+2026-08-29T04:04:34.7496908Z   ignore-empty-workdir: false
+2026-08-29T04:04:34.7497819Z   add-problem-matchers: true
+2026-08-29T04:04:34.7498565Z ##[endgroup]
+2026-08-29T04:04:34.8948667Z (node:2035) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T04:04:34.8951702Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T04:04:34.9075947Z Trying to find version for uv in: /home/runner/work/lugach/lugach/uv.toml
+2026-08-29T04:04:34.9078556Z Could not find file: /home/runner/work/lugach/lugach/uv.toml
+2026-08-29T04:04:34.9080842Z Trying to find version for uv in: /home/runner/work/lugach/lugach/pyproject.toml
+2026-08-29T04:04:34.9092157Z Could not determine uv version from uv.toml or pyproject.toml. Falling back to latest.
+2026-08-29T04:04:34.9095967Z Getting latest version from GitHub API...
+2026-08-29T04:04:35.2464868Z manifest-file not provided, reading from local file.
+2026-08-29T04:04:35.2496100Z manifest-file does not contain version 0.12.7, arch x86_64, platform unknown-linux-gnu. Falling back to GitHub releases.
+2026-08-29T04:04:35.2498099Z Downloading uv from "https://github.com/astral-sh/uv/releases/download/0.12.7/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+2026-08-29T04:04:35.6108880Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/169d9b1e-9758-4211-9547-4d9c6d7ab099 -f /home/runner/work/_temp/c860c570-22c0-41d3-90d2-54c3a2746fef
+2026-08-29T04:04:36.3448846Z Added /home/runner/.local/bin to the path
+2026-08-29T04:04:36.3449288Z Added /opt/hostedtoolcache/uv/0.12.7/x86_64 to the path
+2026-08-29T04:04:36.3468858Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+2026-08-29T04:04:36.3469257Z Successfully installed uv version 0.12.7
+2026-08-29T04:04:36.3471065Z Searching files using cache dependency glob: /home/runner/work/lugach/lugach/**/*requirements*.txt,/home/runner/work/lugach/lugach/**/*requirements*.in,/home/runner/work/lugach/lugach/**/*constraints*.txt,/home/runner/work/lugach/lugach/**/*constraints*.in,/home/runner/work/lugach/lugach/**/pyproject.toml,/home/runner/work/lugach/lugach/**/uv.lock,/home/runner/work/lugach/lugach/**/*.py.lock
+2026-08-29T04:04:36.3542718Z /home/runner/work/lugach/lugach/pyproject.toml
+2026-08-29T04:04:36.3584954Z /home/runner/work/lugach/lugach/uv.lock
+2026-08-29T04:04:36.3590969Z Found 2 files to hash.
+2026-08-29T04:04:36.4627050Z Trying to restore uv cache from GitHub Actions cache with key: setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-3a2e4f7ed115ff1067d3d6917ae8e2b49090fe1f63dff34c61f1ecded7e371e5
+2026-08-29T04:04:36.8290375Z No GitHub Actions cache found for key: setup-uv-1-x86_64-unknown-linux-gnu-3.12.3-pruned-3a2e4f7ed115ff1067d3d6917ae8e2b49090fe1f63dff34c61f1ecded7e371e5
+2026-08-29T04:04:36.8417501Z ##[group]Run uv sync --all-extras --dev
+2026-08-29T04:04:36.8417839Z [36;1muv sync --all-extras --dev[0m
+2026-08-29T04:04:36.8456597Z shell: /usr/bin/bash -e {0}
+2026-08-29T04:04:36.8456819Z env:
+2026-08-29T04:04:36.8457031Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-08-29T04:04:36.8457505Z ##[endgroup]
+2026-08-29T04:04:36.8641211Z Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+2026-08-29T04:04:36.8641712Z Creating virtual environment at: .venv
+2026-08-29T04:04:36.8654308Z Resolved 38 packages in 0.39ms
+2026-08-29T04:04:36.8771321Z    Building lugach @ file:///home/runner/work/lugach/lugach
+2026-08-29T04:04:36.9450142Z Downloading cryptography (4.3MiB)
+2026-08-29T04:04:36.9459328Z Downloading playwright (43.8MiB)
+2026-08-29T04:04:37.1164794Z       Built lugach @ file:///home/runner/work/lugach/lugach
+2026-08-29T04:04:37.3646418Z  Downloaded cryptography
+2026-08-29T04:04:37.4447930Z  Downloaded playwright
+2026-08-29T04:04:37.4859406Z Prepared 34 packages in 619ms
+2026-08-29T04:04:37.7978220Z Installed 34 packages in 311ms
+2026-08-29T04:04:37.7978631Z  + altgraph==0.17.5
+2026-08-29T04:04:37.7978900Z  + arrow==1.3.0
+2026-08-29T04:04:37.7979143Z  + canvasapi==3.3.0
+2026-08-29T04:04:37.7979411Z  + certifi==2025.8.3
+2026-08-29T04:04:37.7979687Z  + cffi==1.17.1
+2026-08-29T04:04:37.7979955Z  + charset-normalizer==3.4.3
+2026-08-29T04:04:37.7980364Z  + click==8.2.1
+2026-08-29T04:04:37.7980782Z  + cryptography==45.0.6
+2026-08-29T04:04:37.7981387Z  + greenlet==3.3.0
+2026-08-29T04:04:37.7981689Z  + idna==3.10
+2026-08-29T04:04:37.7982218Z  + jaraco-classes==3.4.0
+2026-08-29T04:04:37.7982554Z  + jaraco-context==6.0.1
+2026-08-29T04:04:37.7983067Z  + jaraco-functools==4.3.0
+2026-08-29T04:04:37.7983540Z  + jeepney==0.9.0
+2026-08-29T04:04:37.7984044Z  + keyring==25.6.0
+2026-08-29T04:04:37.7984823Z  + lugach==0.2.1 (from file:///home/runner/work/lugach/lugach)
+2026-08-29T04:04:37.7985292Z  + more-itertools==10.7.0
+2026-08-29T04:04:37.7985597Z  + packaging==26.3
+2026-08-29T04:04:37.7986098Z  + playwright==1.57.0
+2026-08-29T04:04:37.7986414Z  + pycparser==2.22
+2026-08-29T04:04:37.7986914Z  + pyee==13.0.0
+2026-08-29T04:04:37.7987487Z  + pyinstaller==6.22.2
+2026-08-29T04:04:37.7987869Z  + pyinstaller-hooks-contrib==2026.7
+2026-08-29T04:04:37.7988245Z  + pyperclip==1.11.0
+2026-08-29T04:04:37.7988667Z  + python-dateutil==2.9.0.post0
+2026-08-29T04:04:37.7989262Z  + python-dotenv==1.1.1
+2026-08-29T04:04:37.7989526Z  + pytz==2025.2
+2026-08-29T04:04:37.7989772Z  + requests==2.32.5
+2026-08-29T04:04:37.7990037Z  + secretstorage==3.3.3
+2026-08-29T04:04:37.7990307Z  + setuptools==84.0.0
+2026-08-29T04:04:37.7990570Z  + six==1.17.0
+2026-08-29T04:04:37.7990913Z  + types-python-dateutil==2.9.0.20250809
+2026-08-29T04:04:37.7991275Z  + typing-extensions==4.15.0
+2026-08-29T04:04:37.7991586Z  + urllib3==2.5.0
+2026-08-29T04:04:37.8057813Z ##[group]Run uv build
+2026-08-29T04:04:37.8058106Z [36;1muv build[0m
+2026-08-29T04:04:37.8090947Z shell: /usr/bin/bash -e {0}
+2026-08-29T04:04:37.8091158Z env:
+2026-08-29T04:04:37.8091371Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-08-29T04:04:37.8091649Z ##[endgroup]
+2026-08-29T04:04:37.9013800Z Building source distribution...
+2026-08-29T04:04:38.0433917Z Building wheel from source distribution...
+2026-08-29T04:04:38.1912089Z Successfully built dist/lugach-0.2.1.tar.gz
+2026-08-29T04:04:38.1912891Z Successfully built dist/lugach-0.2.1-py3-none-any.whl
+2026-08-29T04:04:38.1972243Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T04:04:38.1973227Z ##[group]Run actions/upload-artifact@v4
+2026-08-29T04:04:38.1973446Z with:
+2026-08-29T04:04:38.1973614Z   name: pypi-dist
+2026-08-29T04:04:38.1973802Z   path: dist/*.tar.gz
+dist/*.whl
+
+2026-08-29T04:04:38.1974016Z   if-no-files-found: warn
+2026-08-29T04:04:38.1974209Z   compression-level: 6
+2026-08-29T04:04:38.1974404Z   overwrite: false
+2026-08-29T04:04:38.1974583Z   include-hidden-files: false
+2026-08-29T04:04:38.1974780Z env:
+2026-08-29T04:04:38.1974978Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-08-29T04:04:38.1975224Z ##[endgroup]
+2026-08-29T04:04:38.3378957Z (node:2133) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T04:04:38.3379539Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T04:04:38.3478712Z With the provided path, there will be 2 files uploaded
+2026-08-29T04:04:38.3479711Z Artifact name is valid!
+2026-08-29T04:04:38.3480203Z Root directory input is valid!
+2026-08-29T04:04:38.6993123Z Beginning upload of artifact content to blob storage
+2026-08-29T04:04:38.7172950Z (node:2133) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-29T04:04:39.0035670Z Uploaded bytes 44069
+2026-08-29T04:04:39.0597055Z Finished uploading artifact content to blob storage!
+2026-08-29T04:04:39.0598000Z SHA256 digest of uploaded artifact zip is ba9f664da9c799e3e16c5f6f043a851ae9d6acf05a70672cf5d026d1148c7429
+2026-08-29T04:04:39.0600205Z Finalizing artifact upload
+2026-08-29T04:04:39.3096937Z Artifact pypi-dist.zip successfully finalized. Artifact ID 9709041188
+2026-08-29T04:04:39.3097808Z Artifact pypi-dist has been successfully uploaded! Final size is 44069 bytes. Artifact ID is 9709041188
+2026-08-29T04:04:39.3103081Z Artifact download URL: https://github.com/dnicholson314/lugach/actions/runs/33232933741/artifacts/9709041188
+2026-08-29T04:04:39.3219910Z ##[group]Run uv publish
+2026-08-29T04:04:39.3220130Z [36;1muv publish[0m
+2026-08-29T04:04:39.3252776Z shell: /usr/bin/bash -e {0}
+2026-08-29T04:04:39.3253000Z env:
+2026-08-29T04:04:39.3253210Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-08-29T04:04:39.3254332Z   UV_PUBLISH_TOKEN: ***
+2026-08-29T04:04:39.3254541Z ##[endgroup]
+2026-08-29T04:04:39.3831873Z Publishing 2 files to https://upload.pypi.org/legacy/
+2026-08-29T04:04:39.3834246Z Hashing lugach-0.2.1-py3-none-any.whl (27.0KiB)
+2026-08-29T04:04:39.3840789Z Uploading lugach-0.2.1-py3-none-any.whl (27.0KiB)
+2026-08-29T04:04:39.8083078Z error: Failed to publish `dist/lugach-0.2.1-py3-none-any.whl` to https://upload.pypi.org/legacy/
+2026-08-29T04:04:39.8084177Z   Caused by: Server returned status code 400 Bad Request. Server says: 400 File already exists ('lugach-0.2.1-py3-none-any.whl', with blake2_256 hash '99d82ad73eb25e338792c55b8162367f9e987875a6e7ad448331b0c2aea04882'). See https://pypi.org/help/#file-name-reuse for more information.
+2026-08-29T04:04:39.8099561Z ##[error]Process completed with exit code 2.
+2026-08-29T04:04:39.8208141Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T04:04:39.8209095Z Post job cleanup.
+2026-08-29T04:04:39.8888750Z [command]/usr/bin/git version
+2026-08-29T04:04:39.8923031Z git version 2.55.0
+2026-08-29T04:04:39.8954286Z Temporarily overriding HOME='/home/runner/work/_temp/853a5e0f-58be-4349-b4be-00ee9c9b69fa' before making global git config changes
+2026-08-29T04:04:39.8955371Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T04:04:39.8962049Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lugach/lugach
+2026-08-29T04:04:39.9020855Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T04:04:39.9055885Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T04:04:39.9275085Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T04:04:39.9427715Z http.https://github.com/.extraheader
+2026-08-29T04:04:39.9438101Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-29T04:04:39.9597363Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T04:04:39.9832974Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T04:04:39.9865130Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T04:04:40.0189801Z Cleaning up orphan processes
+2026-08-29T04:04:40.0420644Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4, astral-sh/setup-uv@v6. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

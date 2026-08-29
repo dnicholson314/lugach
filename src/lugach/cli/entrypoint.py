@@ -1,6 +1,7 @@
 from canvasapi.exceptions import ResourceDoesNotExist
 import click
 import json
+import sys
 import lugach.core.thutils as thu
 import lugach.core.cvutils as cvu
 
@@ -188,4 +189,6 @@ def students(course_id):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        sys.argv.extend(["app", "-i"])
     cli()
