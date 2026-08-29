@@ -4,7 +4,6 @@ from playwright.sync_api import sync_playwright
 import lugach.core.cvutils as cvu
 from lugach.core.secrets import update_env_file
 import lugach.core.thutils as thu
-import lugach.core.flutils as flu
 
 import warnings
 
@@ -12,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 WELCOME_MESSAGE = """\
     Welcome to LUGACH! This application will walk you through the steps
-    necessary to connect Canvas and Lighthouse to LUGACH and get the
+    necessary to connect Canvas and Top Hat to LUGACH and get the
     program running as intended.
 
     Press ENTER to continue or (q) to quit. \
@@ -23,14 +22,14 @@ CANVAS_MESSAGE = """\
     your Canvas API key. If not, we'll go ahead and do those things.\
 """
 
-LIBERTY_CREDENTIALS_MESSAGE = """\
-    Next, we'll check if you have inputted proper Liberty credentials,
-    which are required to set up Top Hat.\
+CHROMIUM_MESSAGE = """\
+    Next, we'll make sure the Chromium browser is installed for Playwright,
+    which is needed to authenticate with Top Hat.\
 """
 
 TOP_HAT_MESSAGE = """\
-    Finally, we'll go ahead and check if your Top Hat credentials work,
-    and retrieve them if not.\
+    Finally, we'll check if your Top Hat credentials work,
+    and log you in via a browser window if needed.\
 """
 
 SETUP_COMPLETE = """\
@@ -63,53 +62,53 @@ def _set_up_canvas_api_key():
             _update_canvas_credentials()
 
 
-def _set_up_liberty_credentials():
-    while True:
-        try:
-            flu.get_liberty_credentials()
-            should_update_liberty_credentials = input(
-                "    The provided Liberty credentials work! Would you like to update them (y/n)? "
-            )
-            if should_update_liberty_credentials == "y":
-                flu.prompt_user_for_liberty_credentials()
-
-            return
-        except NameError:
-            print("    Failed to obtain Liberty credentials.")
-            flu.prompt_user_for_liberty_credentials()
+def _set_up_chromium():
+    print("    Checking Chromium browser installation...")
+    success = thu.ensure_chromium_installed()
+    if success:
+        print("    Chromium is ready!")
+    else:
+        print(
+            "    Warning: Failed to verify or install Chromium. Playwright login may fail."
+        )
 
 
 def _update_top_hat_credentials():
+    print(
+        "    Opening a browser window for Top Hat login...\n"
+        "    Please log in using your school account (and complete any MFA prompts if needed).\n"
+        "    The browser will close automatically once authentication succeeds."
+    )
     with sync_playwright() as playwright:
         try:
-            thu.refresh_th_auth_key(playwright)
-            return
-        except PermissionError:
-            pass
-
-        print(
-            "    Could not access Top Hat automatically; loading Top Hat using Liberty credentials "
-            "\n    and trying again..."
-        )
-        thu.get_th_storage_state(playwright)
-        thu.refresh_th_auth_key(playwright)
+            thu.login_to_top_hat(playwright)
+            print("    Successfully logged into Top Hat!")
+        except Exception as e:
+            print(f"    Failed to authenticate with Top Hat: {e}")
 
 
 def _set_up_th_auth_key():
     while True:
         try:
             thu.get_auth_header_for_session()
-            print("    The provided Top Hat credentials work!")
+            should_update_top_hat_credentials = input(
+                "    The provided Top Hat credentials work! Would you like to update them (y/n)? "
+            )
+            if should_update_top_hat_credentials == "y":
+                _update_top_hat_credentials()
             return
         except (NameError, ConnectionRefusedError):
-            should_update_top_hat_credentials = input(
-                "    The provided Top Hat credentials did not work. Would you like to try updating them"
-                "\nautomatically (y/n)? "
-            )
-            if should_update_top_hat_credentials != "y":
-                return
-
+            print("    Top Hat credentials are not set up or have expired.")
             _update_top_hat_credentials()
+            try:
+                thu.get_auth_header_for_session()
+                return
+            except (NameError, ConnectionRefusedError):
+                retry = input(
+                    "    Authentication did not complete. Would you like to try again (y/n)? "
+                )
+                if retry != "y":
+                    return
 
 
 def main():
@@ -124,10 +123,10 @@ def main():
     _set_up_canvas_api_key()
 
     print()
-    print(LIBERTY_CREDENTIALS_MESSAGE)
+    print(CHROMIUM_MESSAGE)
     print()
 
-    _set_up_liberty_credentials()
+    _set_up_chromium()
 
     print()
     print(TOP_HAT_MESSAGE)
@@ -137,3 +136,4 @@ def main():
 
     print()
     input(SETUP_COMPLETE)
+

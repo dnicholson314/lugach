@@ -76,19 +76,13 @@ jobs:
       - name: Build Windows executable
         if: runner.os == 'Windows'
         shell: pwsh
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: "0"
         run: |
-          uv run playwright install chromium
           uv run pyinstaller --name ${{ matrix.name }} --onefile --collect-submodules lugach --collect-all playwright src/lugach/__main__.py
 
       - name: Build macOS executable
         if: runner.os == 'macOS'
         shell: bash
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: "0"
         run: |
-          uv run playwright install chromium
           uv run pyinstaller --name ${{ matrix.name }} --onefile --collect-submodules lugach --collect-all playwright src/lugach/__main__.py
           chmod +x dist/${{ matrix.name }}
           tar -czvf dist/${{ matrix.name }}.tar.gz -C dist ${{ matrix.name }}

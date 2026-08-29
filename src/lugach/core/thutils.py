@@ -1,10 +1,10 @@
+import subprocess
+import time
 from typing import Any, Optional
-from playwright.sync_api import Playwright
-from playwright.sync_api import TimeoutError
+from playwright.sync_api import Playwright, TimeoutError
+from playwright._impl._driver import compute_driver_executable, get_driver_env
 
 from lugach.core import secrets
-from lugach.core.flutils import get_liberty_credentials
-
 import lugach.core.cvutils as cvu
 import requests
 from enum import Enum
@@ -32,50 +32,127 @@ class AttendanceOptions(Enum):
     EXCUSED = 2
 
 
+def ensure_chromium_installed() -> bool:
+    """Download and install Chromium for Playwright if not already installed."""
+    try:
+        driver_executable, driver_cli = compute_driver_executable()
+        result = subprocess.run(
+            [driver_executable, driver_cli, "install", "chromium"],
+            env=get_driver_env(),
+            check=True,
+        )
+        return result.returncode == 0
+    except Exception as e:
+        print(f"Error installing Chromium: {e}")
+        return False
+
+
 def _get_th_auth_token_from_env_file() -> str:
     TH_AUTH_KEY = get_secret(AUTH_KEY_SECRET_NAME)
     return TH_AUTH_KEY
 
 
-def get_th_storage_state(playwright: Playwright) -> None:
-    liberty_username, liberty_password = get_liberty_credentials()
-    browser = playwright.chromium.launch()
+def login_to_top_hat(playwright: Playwright, timeout_in_seconds: int = 300) -> str:
+    """
+    Opens a headful browser for the user to log into Top Hat (supporting MFA / school SSO).
+    Automatically captures the refresh token and saves credentials/storage state,
+    then closes the browser.
+    """
+    captured_tokens: list[str] = []
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
 
-    page.goto("https://app.tophat.com/login")
-    page.get_by_role("combobox", name="Type to search for your school").click()
-    page.get_by_role("combobox", name="Type to search for your school").fill(
-        "Liberty University"
-    )
-    page.get_by_role("option", name="Liberty University", exact=True).click()
-    page.get_by_role("button", name="Log in with school account").click()
-    page.get_by_role("textbox", name="Enter your email, phone, or").click()
-    page.get_by_role("textbox", name="Enter your email, phone, or").fill(
-        liberty_username
-    )
-    page.get_by_role("button", name="Next").click()
-    page.get_by_role("textbox", name="Enter the password for").click()
-    page.get_by_role("textbox", name="Enter the password for").fill(liberty_password)
-    page.get_by_role("button", name="Sign in").click()
+    def handle_request(request):
+        if "refresh_jwt" in request.url and request.method == "POST":
+            try:
+                if request.post_data:
+                    data = json.loads(request.post_data)
+                    token = data.get(AUTH_REQUEST_KEY_NAME)
+                    if token:
+                        captured_tokens.append(token)
+            except Exception:
+                pass
 
-    page.wait_for_url("**/e")
+    context.on("request", handle_request)
 
-    storage_state = context.storage_state()
-    secrets.save_encrypted_storage_state(STORAGE_STATE_SECRET_NAME, storage_state)
+    try:
+        page.goto("https://app.tophat.com/login")
+        # Attempt to assist with selecting Liberty University if available on screen
+        try:
+            school_search = page.get_by_role(
+                "combobox", name="Type to search for your school"
+            )
+            school_search.wait_for(timeout=3000)
+            school_search.fill("Liberty University")
+            page.get_by_role("option", name="Liberty University", exact=True).click(
+                timeout=3000
+            )
+            page.get_by_role("button", name="Log in with school account").click(
+                timeout=3000
+            )
+        except Exception:
+            pass
 
-    context.close()
-    browser.close()
+        # Wait for the user to complete login and for the refresh token to be intercepted
+        start_time = time.time()
+        while time.time() - start_time < timeout_in_seconds:
+            if captured_tokens:
+                break
+
+            # If user reached the dashboard/courses area, give it a moment or trigger menu
+            if "app.tophat.com/e" in page.url:
+                page.wait_for_timeout(2000)
+                if captured_tokens:
+                    break
+
+                try:
+                    menu_button = page.get_by_role("button", name="Main Menu")
+                    if menu_button.is_visible():
+                        menu_button.click()
+                        page.wait_for_timeout(2000)
+                        if captured_tokens:
+                            break
+                except Exception:
+                    pass
+
+            page.wait_for_timeout(1000)
+
+    except Exception as e:
+        if not captured_tokens:
+            raise PermissionError(f"Top Hat login was cancelled or failed: {e}")
+    finally:
+        if captured_tokens:
+            try:
+                storage_state = context.storage_state()
+                secrets.save_encrypted_storage_state(
+                    STORAGE_STATE_SECRET_NAME, storage_state
+                )
+            except Exception:
+                pass
+        try:
+            context.close()
+            browser.close()
+        except Exception:
+            pass
+
+    if not captured_tokens:
+        raise PermissionError("Timed out waiting for Top Hat login or refresh token.")
+
+    th_auth_key = captured_tokens[0]
+    secrets.update_env_file(**{AUTH_KEY_SECRET_NAME: th_auth_key})
+    return th_auth_key
 
 
 def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> None:
     th_auth_key: str | None = None
-    browser = playwright.chromium.launch()
     try:
         storage_state = load_encrypted_storage_state(name=STORAGE_STATE_SECRET_NAME)
     except FileNotFoundError:
-        raise PermissionError("Fatal: could not load authenticated storage state.")
+        login_to_top_hat(playwright)
+        return
 
+    browser = playwright.chromium.launch()
     context = browser.new_context(storage_state=storage_state)
     page = context.new_page()
 
@@ -99,7 +176,7 @@ def refresh_th_auth_key(playwright: Playwright, timeout_in_seconds=10) -> None:
         browser.close()
 
     if not th_auth_key:
-        raise PermissionError("Fatal: Could not retrieve Top Hat auth key.")
+        raise PermissionError("Could not retrieve Top Hat auth key from saved session.")
 
     secrets.update_env_file(**{AUTH_KEY_SECRET_NAME: th_auth_key})
 
