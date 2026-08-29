@@ -1,18 +1,23 @@
-name: Publish to PyPI
+name: Build, Publish, and Release
 
 on:
   push:
     tags:
-      - "v*.*.*"   # Only run when pushing version tags like v1.2.3
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  publish:
+  build-pypi:
+    name: Build PyPI Package
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # ensures tags are available
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -25,14 +30,91 @@ jobs:
       - name: Build package
         run: uv build
 
+      - name: Upload PyPI package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-dist
+          path: |
+            dist/*.tar.gz
+            dist/*.whl
+
       - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: uv publish
 
+  build-executables:
+    name: Build Executable (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows-x86_64
+            name: lugach-windows-x86_64
+            artifact_name: lugach-windows-x86_64
+          - os: macos-latest
+            target: macos-arm64
+            name: lugach-macos-arm64
+            artifact_name: lugach-macos-arm64
+          - os: macos-13
+            target: macos-x86_64
+            name: lugach-macos-x86_64
+            artifact_name: lugach-macos-x86_64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Sync environment
+        run: uv sync --dev
+
+      - name: Build Windows executable
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          uv run pyinstaller --name ${{ matrix.name }} --onefile --collect-submodules lugach --collect-all playwright src/lugach/__main__.py
+
+      - name: Build macOS executable
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          uv run pyinstaller --name ${{ matrix.name }} --onefile --collect-submodules lugach --collect-all playwright src/lugach/__main__.py
+          chmod +x dist/${{ matrix.name }}
+          tar -czvf dist/${{ matrix.name }}.tar.gz -C dist ${{ matrix.name }}
+
+      - name: Upload executable artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            dist/${{ matrix.name }}*
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-pypi, build-executables]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
       - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*.tar.gz
-            dist/*.whl
+            release-assets/*
+          generate_release_notes: true
+
