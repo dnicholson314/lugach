@@ -55,6 +55,9 @@ jobs:
           - os: windows-latest
             target: windows-x86_64
             name: lugach-windows-x86_64
+          - os: macos-13
+            target: macos-x86_64
+            name: lugach-macos-x86_64
           - os: macos-latest
             target: macos-arm64
             name: lugach-macos-arm64
@@ -92,4 +95,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/${{ matrix.name }}*
+            dist/${{ matrix.name }}.exe
+            dist/${{ matrix.name }}.tar.gz
+          fail_on_unmatched_files: false
