@@ -55,7 +55,7 @@ jobs:
           - os: windows-latest
             target: windows-x86_64
             name: lugach-windows-x86_64
-          - os: macos-13
+          - os: macos-15
             target: macos-x86_64
             name: lugach-macos-x86_64
           - os: macos-latest
