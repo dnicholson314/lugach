@@ -13,12 +13,12 @@ and more.
 
 ## Features
 
-- Synchronize and cross-reference data between Canvas, Top Hat, and Lighthouse
+- Synchronize and cross-reference data between Canvas and Top Hat
 - Confirm student enrollment and retrieve student emails
 - Modify due dates and time limits on quizzes and assignments
 - Take and update attendance records
 - Identify absent students and quiz concerns
-- Post final grades and search for students by name
+- Search for students by name
 - Securely manage authentication credentials for all platforms
 - Routine update and feedback mechanisms for error reporting
 
